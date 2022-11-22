@@ -13,7 +13,7 @@ def kaitou(ans):
     if ans_input in ans:
         return f"{(ed-st).seconds}秒かかっているが正解だ"
     else:
-        return "黙れ"
+        return "出直してこい"
 
 def main(quetsiton_ans):
     ans = shutdai(quetsiton_ans)
