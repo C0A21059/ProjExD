@@ -23,6 +23,7 @@ def shutudai(qa_list_copy,qa_list,ans_list):
         print(i,end=" ")
     return ans_list
 
+
 def kaitou(ans_list):
     a = 0
     st = datetime.datetime.now()
