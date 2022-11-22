@@ -30,7 +30,7 @@ def kaitou(ans_list):
     for i in range(1,6):
         if a==0:
             ans_f = input("\n欠損文字はいくつになるでしょうか?：")
-            if len(ans_list) == int(ans_f):
+            if str(len(ans_list)) == ans_f:
                 print("正解です。それでは、具体的に欠損文字を1つずつ入力してください")
                 a+=1
             else:
