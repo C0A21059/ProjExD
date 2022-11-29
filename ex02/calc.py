@@ -1,5 +1,4 @@
 import tkinter as tk
-import tkinter.messagebox as tkm
 
 def button_click(event):
     btn = event.widget
