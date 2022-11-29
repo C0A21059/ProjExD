@@ -9,6 +9,8 @@ def button_click(event):
         ans = eval(siki)
         entry.delete(0, tk.END)
         entry.insert(tk.END, ans)
+    elif num =="C":
+        entry.delete(0, tk.END)
     else:
         entry.insert(tk.END, num)
 
@@ -34,7 +36,13 @@ if __name__ == "__main__":
     option = ["/","*","-","+","="]#演算子の追加はここに
     for op in option:
         button = tk.Button(root,text=f"{op}", font=("", 30), width = 4, height = 2)
-        button.grid(row = num % len(option) + 1, column = 4)
+        button.grid(row = num % len(option)+1 , column = 4)
         button.bind("<1>", button_click)
         num += 1
+
+    option_4 = ["C","."]#数字の下に置く4段目のオールクリアのCと小数点.を入れている。そのためrowの位置は固定
+    for i,op in enumerate(option_4):
+        button = tk.Button(root,text=f"{op}", font=("", 30), width = 4, height = 2)
+        button.grid(row = 4, column = i*2)
+        button.bind("<1>", button_click)
     root.mainloop()
