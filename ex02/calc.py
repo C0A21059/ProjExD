@@ -3,8 +3,11 @@ import tkinter.messagebox as tkm
 
 def button_click(event):
     btn = event.widget
-    txt = btn["text"]
-    tkm.showinfo(txt,f"[{txt}]ボタンが押されました")
+    num = btn["text"]
+    if num =="=":
+        pass
+    else:
+        entry.insert(tk.END,num)
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -21,7 +24,7 @@ if __name__ == "__main__":
         button.bind("<1>",button_click)
         num += 1
 
-    option = ["＋","＝"]
+    option = ["+","="]
     for op in option:
         button = tk.Button(root,text=f"{op}",font=("",30),width=4,height=2)
         button.grid(row = num//3+1, column=num%3)
