@@ -22,12 +22,12 @@ if __name__ == "__main__":
     num = 0
     for i in range(10):
 
-        button = tk.Button(root,text=f"{9-num}",font=("",30),width=4,height=2)
+        button = tk.Button(root,text=f"{9-num}",font=("",30),width=4,height=2,bg="#ffffff")
         button.grid(row = num//3+1, column=num%3)
         button.bind("<1>",button_click)
         num += 1
 
-    option = ["+","="]
+    option = ["+","="]#演算子の追加はここに
     for op in option:
         button = tk.Button(root,text=f"{op}",font=("",30),width=4,height=2)
         button.grid(row = num//3+1, column=num%3)
