@@ -12,7 +12,7 @@ def button_click(event):
     elif num =="C":
         #Cが検出された場合全て削除
         entry.delete(0, tk.END)
-    elif num =="BC":
+    elif num =="CE":
         back = len(entry.get())-1
         entry.delete(back, tk.END)
     elif num =="%":
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         button.grid(row = 5, column = i * 2)
         button.bind("<1>", button_click)
 
-    option_1 = ["√", "%", "BC"]#
+    option_1 = ["√", "%", "CE"]#
     for i,op in enumerate(option_1):
         button = tk.Button(root,text=f"{op}", font=("", 30), width = 4, height = 2)
         button.grid(row = 1, column = i)
