@@ -1,5 +1,4 @@
 import random
-import tkinter as tk
 
 def make_maze(yoko, tate):
     XP = [ 0, 1, 0, -1]
@@ -41,7 +40,3 @@ def print_maze(maze_lst):
 if __name__ == "__main__":
     maze = make_maze(15,9)
     print_maze(maze)
-
-    root = tk.Tk()
-    root.title("迷えるこうかとん")
-    root.mainloop()
