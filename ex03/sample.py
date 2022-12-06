@@ -10,13 +10,14 @@ def count_up():
 
 def key_down(event):
     global jid
+    key = event.keysym
     if jid is not None:
         print(jid)
         root.after_cancel(jid)
         jid = None
-    key = event.keysym
-    jid = root.after(1000,count_up)
-    #root.after(1000,count_up)
+    else:
+        jid = root.after(1000,count_up)
+        #root.after(1000,count_up)
     tkm.showinfo(f"{key}", f"{key}")
 
 if __name__ == "__main__":
