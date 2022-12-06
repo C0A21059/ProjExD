@@ -15,7 +15,7 @@ def key_up(event):
     key = ""
 
 def main_proc():
-    global cx,cy, mx, my,index
+    global mx, my,index
     #辞書のキーを押したキーの判定、値に次のマスの判定、成功したときの横の移動量、縦の移動量,増殖するこうかとんの画像識別
     data = {key == "Up": [maze_lis[mx][my-1] !=1, 0, -1, 1],
             key == "Down": [maze_lis[mx][my+1] !=1, 0, 1, 2],
