@@ -16,7 +16,7 @@ def key_up(event):
 
 def main_proc():
     global cx,cy, mx, my,index
-    #辞書のキーを押したキーの判定、値に次のマスの判定、成功したときの横の移動量、縦の移動量
+    #辞書のキーを押したキーの判定、値に次のマスの判定、成功したときの横の移動量、縦の移動量,増殖するこうかとんの画像識別
     data = {key == "Up": [maze_lis[mx][my-1] !=1, 0, -1, 1],
             key == "Down": [maze_lis[mx][my+1] !=1, 0, 1, 2],
             key == "Left": [maze_lis[mx-1][my] !=1, -1, 0, 3],
@@ -28,7 +28,7 @@ def main_proc():
                 my += v[2]
                 index = v[3]
 
-    cx,cy = 50 +mx*100, 50+my*100
+    cx, cy = 50 + mx*100, 50 + my*100
     canvas.coords("kokaton", cx, cy)
     if mode ==1:
         canvas.create_image(cx, cy,
