@@ -4,7 +4,7 @@ import maze_maker as mm
 def key_down(event):
     global key,mode
     key = event.keysym
-    if key =="a":
+    if key =="a": #こうかとんの増殖モードにするかの判定
         if mode ==0:
             mode = 1
         else:
@@ -22,11 +22,11 @@ def main_proc():
             key == "Left": [maze_lis[mx-1][my] !=1, -1, 0, 3],
             key == "Right": [maze_lis[mx+1][my] !=1, 1, 0, 4]}
     for k,v in data.items():
-        if k:
-            if v[0]:
-                mx += v[1]
-                my += v[2]
-                index = v[3]
+        if k: #押したキーの判定
+            if v[0]: #次のマスの判定
+                mx += v[1] #横の移動
+                my += v[2] #縦の移動
+                index = v[3] #増殖するこうかとんの画像を選択
 
     cx, cy = 50 + mx*100, 50 + my*100
     canvas.coords("kokaton", cx, cy)
