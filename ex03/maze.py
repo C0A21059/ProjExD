@@ -13,19 +13,15 @@ def main_proc():
     global cx,cy, mx, my
     if key == "Up":
         if maze_lis[mx][my-1] !=1:
-            cy =cy - 100*my
             my -= 1
     if key == "Down":
         if maze_lis[mx][my+1] !=1:
-            cy += 100*my
             my += 1
     if key == "Left":
         if maze_lis[mx-1][my] !=1:
-            cx -= 100*mx
             mx -= 1
     if key == "Right":
         if maze_lis[mx+1][my] !=1:
-            cx += 100*mx
             mx += 1
     cx,cy = 50 +mx*100, 50+my*100
     canvas.coords("kokaton", cx, cy)
