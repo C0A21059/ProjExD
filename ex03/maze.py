@@ -57,7 +57,7 @@ if __name__ == "__main__":
     canvas.pack()
 
     maze_lis = mm.make_maze(15,9)
-    #print(maze_lis)
+
     mm.show_maze(canvas, maze_lis)
     canvas.create_image(cx, cy,
                         image=png[index],
