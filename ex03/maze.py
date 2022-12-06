@@ -8,6 +8,17 @@ def key_up(event):
     global key
     key = ""
 
+def main_proc():
+    global cx, cy, key
+    if key == "Up": cy -= 20
+    if key == "Down": cy += 20
+    if key == "Left": cx -= 20
+    if key == "Right": cx += 20
+    canvas.coords("kokaton", cx, cy)
+    root.after(100,main_proc)
+
+
+
 if __name__ == "__main__":
     cx = 300
     cy = 400
@@ -24,5 +35,6 @@ if __name__ == "__main__":
     canvas.pack()
 
     root.bind("<KeyPress>", key_down)
+    main_proc()
     root.bind("<KeyRelease>", key_up)
     root.mainloop()
