@@ -2,8 +2,6 @@ import pygame as pg
 import sys
 import random
 
-vx, vy = +1, +1 #爆弾の移動方向
-
 def check_bound(obj_rct, scr_rct):
     # 第一引数：こうかとんrectまたは爆弾rect
     # 第二引数：スクリーンrect
@@ -40,8 +38,8 @@ def main():
     bomb_rct.centery = random.randint(0, scrn_rct.centery)
     scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
 
+    vx, vy = +1, +1 #爆弾の移動方向
     while True:
-        global vx, vy
         scrn_sfc.blit(bg_sfc, bg_rct) #blit
         for event in pg.event.get(): #イベントを繰り返しで処理
             if event.type == pg.QUIT: return #ウィンドウの✖ボタンをクリックしたら
