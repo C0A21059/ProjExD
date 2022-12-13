@@ -1,7 +1,7 @@
 import pygame as pg
 import sys
 import random
-import time
+import copy
 
 def check_bound(obj_rct, scr_rct):
     # 第一引数：こうかとんrectまたは爆弾rect
@@ -14,6 +14,13 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate
 
+def bomb_copy(bomb_rct,bomb_lis, scrn_rct):
+    #左上か左下にランダムに生成
+    vx, vy = random.choice([-1, 1]), random.choice([-1, 1])
+    new_bomb_rct = copy.deepcopy(bomb_rct) #Rectをdeepcopyで個別に作成
+    new_bomb_rct.centerx = random.choice([random.randint(scrn_rct.centerx - 200, scrn_rct.centerx), random.randint(0, 200)])
+    new_bomb_rct.centery = random.randint(0, 200)
+    bomb_lis.append([new_bomb_rct, vx, vy])
 
 def main():
     clock = pg.time.Clock() #時間計測用のオブジェクト
@@ -46,6 +53,7 @@ def main():
     font_go = pg.font.Font(None, 200)
 
     vx, vy = +1, +1 #爆弾の移動方向
+    bomb_lis = [[bomb_rct, vx, vy]]
     while True:
         scrn_sfc.blit(bg_sfc, bg_rct) #blit
         for event in pg.event.get(): #イベントを繰り返しで処理
@@ -76,21 +84,28 @@ def main():
                     tori_rct.centery += v[1]
 
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
-        yoko, tate = check_bound(bomb_rct, scrn_rct)
-        vx *= yoko
-        vy *= tate
-        bomb_rct.move_ip(vx, vy) #爆弾をvx, vy移動
-        scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
+        for bomb_r in bomb_lis:
+            yoko, tate = check_bound(bomb_r[0], scrn_rct)
+            bomb_r[1] *= yoko
+            bomb_r[2] *= tate
+            bomb_r[0].move_ip(bomb_r[1], bomb_r[2]) #爆弾をvx, vy移動
+            scrn_sfc.blit(bomb_sfc, bomb_r[0]) #blit
         tmr = pg.time.get_ticks()/1000 #描画するタイムを取得
         txt = font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
         scrn_sfc.blit(txt, (0, 0)) #blit
-        if tori_rct.colliderect(bomb_rct):
-            txt_go = font_go.render("GameOver", True, "black") #黒色でGameOverを書いたSurfaceを生成する
-            scrn_sfc.blit(txt_go, (400, 300)) #blit
-            pg.display.update()
-            pg.time.delay(2000)
-            break
+
+        for bomb_r in bomb_lis:
+            if tori_rct.colliderect(bomb_r[0]):
+                txt_go = font_go.render("GameOver", True, "black") #黒色でGameOverを書いたSurfaceを生成する
+                scrn_sfc.blit(txt_go, (400, 300)) #blit
+                pg.display.update()
+                pg.time.delay(2000) #GameOverが描画されてから2秒間止める
+                return
         pg.display.update() #blitしてもスクリーンを更新しないと表示されない
+
+        #4990msから5000msに処理が追いつくだけ追加
+        if pg.time.get_ticks()%5000 >= 4990:
+            bomb_copy(bomb_rct,bomb_lis, scrn_rct) #bomb_rctを複製
         clock.tick(1000) #1000fpsの時を刻む
 
 if __name__ == "__main__":
