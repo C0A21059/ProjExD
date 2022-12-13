@@ -6,6 +6,7 @@ def check_bound(obj_rct, scr_rct):
     # 第一引数：こうかとんrectまたは爆弾rect
     # 第二引数：スクリーンrect
     # 範囲内なら+1, 範囲外なら-1
+    
     yoko, tate = +1, +1
     if obj_rct.left < scr_rct.left or obj_rct.right > scr_rct.right:
         yoko = -1
