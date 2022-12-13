@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 import random
+import copy
 
 def check_bound(obj_rct, scr_rct):
     # 第一引数：こうかとんrectまたは爆弾rect
@@ -13,6 +14,15 @@ def check_bound(obj_rct, scr_rct):
     if obj_rct.top < scr_rct.top or obj_rct.bottom > scr_rct.bottom:
         tate = -1
     return yoko, tate
+
+def bomb_copy(bomb_rct,bomb_lis, scrn_rct):
+    #左上か左下にランダムに生成
+    vx, vy = random.choice([-1, 1]), random.choice([-1, 1]) #どの方向に進むかはランダム
+    new_bomb_rct = copy.deepcopy(bomb_rct) #Rectをdeepcopyで個別に作成
+    new_bomb_rct.centerx = random.choice([random.randint(scrn_rct.centerx - 200, scrn_rct.centerx),
+                                        random.randint(0, 200)]) #左上か右上か選ぶ
+    new_bomb_rct.centery = random.randint(0, 200) #高さは固定
+    bomb_lis.append([new_bomb_rct, vx, vy])
 
 def main():
     clock = pg.time.Clock() #時間計測用のオブジェクト
@@ -39,40 +49,65 @@ def main():
     bomb_rct.centery = random.randint(0, scrn_rct.centery)
     scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
 
+    #タイマー用のフォント設定
+    font = pg.font.Font(None, 80)
+    #GameOver用のフォント設定
+    font_go = pg.font.Font(None, 200)
+
     vx, vy = +1, +1 #爆弾の移動方向
+    bomb_lis = [[bomb_rct, vx, vy]]
     while True:
         scrn_sfc.blit(bg_sfc, bg_rct) #blit
         for event in pg.event.get(): #イベントを繰り返しで処理
             if event.type == pg.QUIT: return #ウィンドウの✖ボタンをクリックしたら
 
         key_dct = pg.key.get_pressed() #辞書型　キーの判定に利用
-        if key_dct[pg.K_UP]:
-            tori_rct.centery -= 1
-        if key_dct[pg.K_DOWN]:
-            tori_rct.centery += 1
-        if key_dct[pg.K_LEFT]:
-            tori_rct.centerx -=1
-        if key_dct[pg.K_RIGHT]:
-            tori_rct.centerx +=1
+
+        #移動方向の判定をキーに移動量を値に設定した辞書
+        data = {key_dct[pg.K_UP]: [0,-1],
+                key_dct[pg.K_DOWN]: [ 0, +1],
+                key_dct[pg.K_LEFT]: [-1, 0],
+                key_dct[pg.K_RIGHT]: [+1, 0]}
+        for k, v in data.items():
+            if k:
+                tori_rct.centerx += v[0]
+                tori_rct.centery += v[1]
+
+        #check_boundで用いる、移動方向の判定をキーに移動量を値に設定した辞書
+        data_bound = {key_dct[pg.K_UP]: [0,+1],
+                    key_dct[pg.K_DOWN]: [ 0, -1],
+                    key_dct[pg.K_LEFT]: [+1, 0],
+                    key_dct[pg.K_RIGHT]: [-1, 0]}
+
         if check_bound(tori_rct, scrn_rct) != (+1, +1):
-            if key_dct[pg.K_UP]:
-                tori_rct.centery += 1
-            if key_dct[pg.K_DOWN]:
-                tori_rct.centery -= 1
-            if key_dct[pg.K_LEFT]:
-                tori_rct.centerx +=1
-            if key_dct[pg.K_RIGHT]:
-                tori_rct.centerx -=1
+            for k, v in data_bound.items():
+                if k:
+                    tori_rct.centerx += v[0]
+                    tori_rct.centery += v[1]
 
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
-        yoko, tate = check_bound(bomb_rct, scrn_rct)
-        vx *= yoko
-        vy *= tate
-        bomb_rct.move_ip(vx, vy) #爆弾をvx, vy移動
-        scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
-        if tori_rct.colliderect(bomb_rct):
-            break
+        for bomb_r in bomb_lis:
+            yoko, tate = check_bound(bomb_r[0], scrn_rct)
+            bomb_r[1] *= yoko
+            bomb_r[2] *= tate
+            bomb_r[0].move_ip(bomb_r[1], bomb_r[2]) #爆弾をvx, vy移動
+            scrn_sfc.blit(bomb_sfc, bomb_r[0]) #blit
+        tmr = pg.time.get_ticks()/1000 #描画するタイムを取得
+        txt = font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
+        scrn_sfc.blit(txt, (0, 0)) #blit
+
+        for bomb_r in bomb_lis:
+            if tori_rct.colliderect(bomb_r[0]):
+                txt_go = font_go.render("GameOver", True, "black") #黒色でGameOverを書いたSurfaceを生成する
+                scrn_sfc.blit(txt_go, (400, 300)) #blit
+                pg.display.update()
+                pg.time.delay(2000) #GameOverが描画されてから2秒間止める
+                return
         pg.display.update() #blitしてもスクリーンを更新しないと表示されない
+
+        #4990msから5000msに処理が追いつくだけ追加
+        if pg.time.get_ticks()%5000 >= 4990:
+            bomb_copy(bomb_rct,bomb_lis, scrn_rct) #bomb_rctを複製
         clock.tick(1000) #1000fpsの時を刻む
 
 if __name__ == "__main__":
