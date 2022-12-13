@@ -9,21 +9,32 @@ def main():
 
     bg_sfc = pg.image.load("fig/pg_bg.jpg") #背景となる「pg_bg.jpg」のSurface
     bg_rct = bg_sfc.get_rect() #Rect
-    scrn_sfc.blit(bg_sfc, bg_rct) #blit
 
     tori_sfc = pg.image.load("fig/3.png") #こうかとんのSurface
     tori_sfc = pg.transform.rotozoom(tori_sfc, 0, 2.0) #こうかとんの大きさを2倍に
     tori_rct = tori_sfc.get_rect() #Rect
-    tori_rct.center = 900, 300
+    tori_rct.center = 900, 400
     scrn_sfc.blit(tori_sfc, tori_rct) #blit
 
     pg.display.update() #blitしてもスクリーンを更新しないと表示されない
-    clock.tick(1000) #1000fpsの時を刻む
 
     while True:
+        scrn_sfc.blit(bg_sfc, bg_rct) #blit
         for event in pg.event.get(): #イベントを繰り返しで処理
             if event.type == pg.QUIT: return #ウィンドウの✖ボタンをクリックしたら
 
+        key_dct = pg.key.get_pressed() #辞書型　キーの判定に利用
+        if key_dct[pg.K_UP]:
+            tori_rct.centery -= 1
+        if key_dct[pg.K_DOWN]:
+            tori_rct.centery += 1
+        if key_dct[pg.K_LEFT]:
+            tori_rct.centerx -=1
+        if key_dct[pg.K_RIGHT]:
+            tori_rct.centerx +=1
+        scrn_sfc.blit(tori_sfc, tori_rct) #blit
+        pg.display.update() #blitしてもスクリーンを更新しないと表示されない
+        clock.tick(1000) #1000fpsの時を刻む
 
 if __name__ == "__main__":
     pg.init()
