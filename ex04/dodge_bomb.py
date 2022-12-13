@@ -63,23 +63,27 @@ def main():
 
         key_dct = pg.key.get_pressed() #辞書型　キーの判定に利用
 
-        #移動方向の判定をキーに移動量を値に設定した辞書
+        #移動方向の判定をキーに、移動量を値に設定した辞書
         data = {key_dct[pg.K_UP]:    [ 0, -1],
                 key_dct[pg.K_DOWN]:  [ 0, +1],
                 key_dct[pg.K_LEFT]:  [-1,  0],
                 key_dct[pg.K_RIGHT]: [+1,  0]}
+
+        #こうかとんの移動をキーごとに判定
         for k, v in data.items():
             if k:
                 tori_rct.centerx += v[0]
                 tori_rct.centery += v[1]
 
-        #check_boundで用いる、移動方向の判定をキーに移動量を値に設定した辞書
+        #check_boundで用いる、移動方向の判定をキーに、移動量を値に設定した辞書
         data_bound = {key_dct[pg.K_UP]:  [ 0, +1],
                     key_dct[pg.K_DOWN]:  [ 0, -1],
                     key_dct[pg.K_LEFT]:  [+1,  0],
                     key_dct[pg.K_RIGHT]: [-1,  0]}
 
+        #こうかとんが画面外に移動をしようとしたか判定
         if check_bound(tori_rct, scrn_rct) != (+1, +1):
+            #こうかとんの移動をキーごとに判定
             for k, v in data_bound.items():
                 if k:
                     tori_rct.centerx += v[0]
