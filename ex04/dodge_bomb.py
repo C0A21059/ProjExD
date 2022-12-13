@@ -53,13 +53,24 @@ def main():
             tori_rct.centerx -=1
         if key_dct[pg.K_RIGHT]:
             tori_rct.centerx +=1
-        scrn_sfc.blit(tori_sfc, tori_rct) #blit
+        if check_bound(tori_rct, scrn_rct) != (+1, +1):
+            if key_dct[pg.K_UP]:
+                tori_rct.centery += 1
+            if key_dct[pg.K_DOWN]:
+                tori_rct.centery -= 1
+            if key_dct[pg.K_LEFT]:
+                tori_rct.centerx +=1
+            if key_dct[pg.K_RIGHT]:
+                tori_rct.centerx -=1
 
+        scrn_sfc.blit(tori_sfc, tori_rct) #blit
         yoko, tate = check_bound(bomb_rct, scrn_rct)
         vx *= yoko
         vy *= tate
         bomb_rct.move_ip(vx, vy) #爆弾をvx, vy移動
         scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
+        if tori_rct.colliderect(bomb_rct):
+            break
         pg.display.update() #blitしてもスクリーンを更新しないと表示されない
         clock.tick(1000) #1000fpsの時を刻む
 
