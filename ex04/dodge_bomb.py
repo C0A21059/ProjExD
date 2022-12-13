@@ -25,6 +25,7 @@ def bomb_copy(bomb_rct,bomb_lis, scrn_rct):
     bomb_lis.append([new_bomb_rct, vx, vy])
 
 def main():
+    count = 1000 #こうかとんと爆弾が10秒間当たるとGameOver
     clock = pg.time.Clock() #時間計測用のオブジェクト
 
     pg.display.set_caption("逃げろ！こうかとん") #タイトルバーに「逃げろ！こうかとん」と表示する
@@ -102,11 +103,15 @@ def main():
 
         for bomb_r in bomb_lis:
             if tori_rct.colliderect(bomb_r[0]):
-                txt_go = font_go.render("GameOver", True, "black") #黒色でGameOverを書いたSurfaceを生成する
-                scrn_sfc.blit(txt_go, (400, 300)) #blit
-                pg.display.update()
-                pg.time.delay(2000) #GameOverが描画されてから2秒間止める
-                return
+                if count <0:
+                    txt_go = font_go.render("GameOver", True, "black") #黒色でGameOverを書いたSurfaceを生成する
+                    scrn_sfc.blit(txt_go, (400, 300)) #blit
+                    pg.display.update()
+                    pg.time.delay(2000) #GameOverが描画されてから2秒間止める
+                    return
+                else:
+                    count -=  1
+                    break
         pg.display.update() #blitしてもスクリーンを更新しないと表示されない
 
         #4990msから5000msに処理が追いつくだけ爆弾を追加
