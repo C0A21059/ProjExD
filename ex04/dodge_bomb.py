@@ -28,7 +28,7 @@ def main():
     clock = pg.time.Clock() #時間計測用のオブジェクト
 
     pg.display.set_caption("逃げろ！こうかとん") #タイトルバーに「逃げろ！こうかとん」と表示する
-    scrn_sfc = pg.display.set_mode((1600,900)) #1600x900の画面Surfaceを生成する
+    scrn_sfc = pg.display.set_mode((1600, 900)) #1600x900の画面Surfaceを生成する
     scrn_rct = scrn_sfc.get_rect()
 
     bg_sfc = pg.image.load("fig/pg_bg.jpg") #背景となる「pg_bg.jpg」のSurface
@@ -64,20 +64,20 @@ def main():
         key_dct = pg.key.get_pressed() #辞書型　キーの判定に利用
 
         #移動方向の判定をキーに移動量を値に設定した辞書
-        data = {key_dct[pg.K_UP]: [0,-1],
-                key_dct[pg.K_DOWN]: [ 0, +1],
-                key_dct[pg.K_LEFT]: [-1, 0],
-                key_dct[pg.K_RIGHT]: [+1, 0]}
+        data = {key_dct[pg.K_UP]:    [ 0, -1],
+                key_dct[pg.K_DOWN]:  [ 0, +1],
+                key_dct[pg.K_LEFT]:  [-1,  0],
+                key_dct[pg.K_RIGHT]: [+1,  0]}
         for k, v in data.items():
             if k:
                 tori_rct.centerx += v[0]
                 tori_rct.centery += v[1]
 
         #check_boundで用いる、移動方向の判定をキーに移動量を値に設定した辞書
-        data_bound = {key_dct[pg.K_UP]: [0,+1],
-                    key_dct[pg.K_DOWN]: [ 0, -1],
-                    key_dct[pg.K_LEFT]: [+1, 0],
-                    key_dct[pg.K_RIGHT]: [-1, 0]}
+        data_bound = {key_dct[pg.K_UP]:  [ 0, +1],
+                    key_dct[pg.K_DOWN]:  [ 0, -1],
+                    key_dct[pg.K_LEFT]:  [+1,  0],
+                    key_dct[pg.K_RIGHT]: [-1,  0]}
 
         if check_bound(tori_rct, scrn_rct) != (+1, +1):
             for k, v in data_bound.items():
