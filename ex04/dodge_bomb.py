@@ -11,8 +11,12 @@ def main():
 
     pg.display.update() #biltしてもスクリーンを更新しないと表示されない
 
-    clock = pg.time.Clock()
-    clock.tick(0.5)
+    clock = pg.time.Clock() #時間計測用のオブジェクト
+    clock.tick(1000) #1000fpsの時を刻む
+
+    while True:
+        for event in pg.event.get(): #イベントを繰り返しで処理
+            if event.type == pg.QUIT: return #ウィンドウの✖ボタンをクリックしたら
 
 
 if __name__ == "__main__":
