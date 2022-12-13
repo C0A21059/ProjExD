@@ -2,6 +2,19 @@ import pygame as pg
 import sys
 import random
 
+vx, vy = +1, +1 #爆弾の移動方向
+
+def check_bound(obj_rct, scr_rct):
+    # 第一引数：こうかとんrectまたは爆弾rect
+    # 第二引数：スクリーンrect
+    # 範囲内なら+1, 範囲外なら-1
+    yoko, tate = +1, +1
+    if obj_rct.left < scr_rct.left or obj_rct.right > scr_rct.right:
+        yoko = -1
+    if obj_rct.top < scr_rct.top or obj_rct.bottom > scr_rct.bottom:
+        tate = -1
+    return yoko, tate
+
 def main():
     clock = pg.time.Clock() #時間計測用のオブジェクト
 
@@ -28,6 +41,7 @@ def main():
     scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
 
     while True:
+        global vx, vy
         scrn_sfc.blit(bg_sfc, bg_rct) #blit
         for event in pg.event.get(): #イベントを繰り返しで処理
             if event.type == pg.QUIT: return #ウィンドウの✖ボタンをクリックしたら
@@ -42,6 +56,11 @@ def main():
         if key_dct[pg.K_RIGHT]:
             tori_rct.centerx +=1
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
+
+        yoko, tate = check_bound(bomb_rct, scrn_rct)
+        vx *= yoko
+        vy *= tate
+        bomb_rct.move_ip(vx, vy) #爆弾をvx, vy移動
         scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
         pg.display.update() #blitしてもスクリーンを更新しないと表示されない
         clock.tick(1000) #1000fpsの時を刻む
