@@ -16,10 +16,11 @@ def check_bound(obj_rct, scr_rct):
 
 def bomb_copy(bomb_rct,bomb_lis, scrn_rct):
     #左上か左下にランダムに生成
-    vx, vy = random.choice([-1, 1]), random.choice([-1, 1])
+    vx, vy = random.choice([-1, 1]), random.choice([-1, 1]) #どの方向に進むかはランダム
     new_bomb_rct = copy.deepcopy(bomb_rct) #Rectをdeepcopyで個別に作成
-    new_bomb_rct.centerx = random.choice([random.randint(scrn_rct.centerx - 200, scrn_rct.centerx), random.randint(0, 200)])
-    new_bomb_rct.centery = random.randint(0, 200)
+    new_bomb_rct.centerx = random.choice([random.randint(scrn_rct.centerx - 200, scrn_rct.centerx),
+                                        random.randint(0, 200)]) #左上か右上か選ぶ
+    new_bomb_rct.centery = random.randint(0, 200) #高さは固定
     bomb_lis.append([new_bomb_rct, vx, vy])
 
 def main():
