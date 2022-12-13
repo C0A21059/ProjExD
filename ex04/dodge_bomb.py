@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 import random
+import time
 
 def check_bound(obj_rct, scr_rct):
     # 第一引数：こうかとんrectまたは爆弾rect
@@ -38,6 +39,9 @@ def main():
     bomb_rct.centery = random.randint(0, scrn_rct.centery)
     scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
 
+    #タイマー用の設定
+    font = pg.font.Font(None, 80)
+
     vx, vy = +1, +1 #爆弾の移動方向
     while True:
         scrn_sfc.blit(bg_sfc, bg_rct) #blit
@@ -45,23 +49,28 @@ def main():
             if event.type == pg.QUIT: return #ウィンドウの✖ボタンをクリックしたら
 
         key_dct = pg.key.get_pressed() #辞書型　キーの判定に利用
-        if key_dct[pg.K_UP]:
-            tori_rct.centery -= 1
-        if key_dct[pg.K_DOWN]:
-            tori_rct.centery += 1
-        if key_dct[pg.K_LEFT]:
-            tori_rct.centerx -=1
-        if key_dct[pg.K_RIGHT]:
-            tori_rct.centerx +=1
+
+        #移動方向の判定をキーに移動量を値に設定した辞書
+        data = {key_dct[pg.K_UP]: [0,-1],
+                key_dct[pg.K_DOWN]: [ 0, +1],
+                key_dct[pg.K_LEFT]: [-1, 0],
+                key_dct[pg.K_RIGHT]: [+1, 0]}
+        for k, v in data.items():
+            if k:
+                tori_rct.centerx += v[0]
+                tori_rct.centery += v[1]
+
+        #check_boundで用いる、移動方向の判定をキーに移動量を値に設定した辞書
+        data_bound = {key_dct[pg.K_UP]: [0,+1],
+                    key_dct[pg.K_DOWN]: [ 0, -1],
+                    key_dct[pg.K_LEFT]: [+1, 0],
+                    key_dct[pg.K_RIGHT]: [-1, 0]}
+
         if check_bound(tori_rct, scrn_rct) != (+1, +1):
-            if key_dct[pg.K_UP]:
-                tori_rct.centery += 1
-            if key_dct[pg.K_DOWN]:
-                tori_rct.centery -= 1
-            if key_dct[pg.K_LEFT]:
-                tori_rct.centerx +=1
-            if key_dct[pg.K_RIGHT]:
-                tori_rct.centerx -=1
+            for k, v in data_bound.items():
+                if k:
+                    tori_rct.centerx += v[0]
+                    tori_rct.centery += v[1]
 
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
         yoko, tate = check_bound(bomb_rct, scrn_rct)
@@ -71,6 +80,9 @@ def main():
         scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
         if tori_rct.colliderect(bomb_rct):
             break
+        tmr = pg.time.get_ticks()/1000
+        txt = font.render("{:.1f}".format(tmr), True, "black")
+        scrn_sfc.blit(txt, (0, 0))
         pg.display.update() #blitしてもスクリーンを更新しないと表示されない
         clock.tick(1000) #1000fpsの時を刻む
 
