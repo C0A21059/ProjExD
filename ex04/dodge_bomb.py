@@ -14,6 +14,7 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate
 
+
 def main():
     clock = pg.time.Clock() #時間計測用のオブジェクト
 
@@ -39,8 +40,10 @@ def main():
     bomb_rct.centery = random.randint(0, scrn_rct.centery)
     scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
 
-    #タイマー用の設定
+    #タイマー用のフォント設定
     font = pg.font.Font(None, 80)
+    #GameOver用のフォント設定
+    font_go = pg.font.Font(None, 200)
 
     vx, vy = +1, +1 #爆弾の移動方向
     while True:
@@ -78,11 +81,15 @@ def main():
         vy *= tate
         bomb_rct.move_ip(vx, vy) #爆弾をvx, vy移動
         scrn_sfc.blit(bomb_sfc, bomb_rct) #blit
+        tmr = pg.time.get_ticks()/1000 #描画するタイムを取得
+        txt = font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
+        scrn_sfc.blit(txt, (0, 0)) #blit
         if tori_rct.colliderect(bomb_rct):
+            txt_go = font_go.render("GameOver", True, "black") #黒色でGameOverを書いたSurfaceを生成する
+            scrn_sfc.blit(txt_go, (400, 300)) #blit
+            pg.display.update()
+            pg.time.delay(2000)
             break
-        tmr = pg.time.get_ticks()/1000
-        txt = font.render("{:.1f}".format(tmr), True, "black")
-        scrn_sfc.blit(txt, (0, 0))
         pg.display.update() #blitしてもスクリーンを更新しないと表示されない
         clock.tick(1000) #1000fpsの時を刻む
 
