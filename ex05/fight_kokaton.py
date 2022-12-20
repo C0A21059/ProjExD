@@ -1,7 +1,12 @@
-import pygame as pg
 import random
+import os
+import copy
+
+import pygame as pg
 import sys
 
+
+main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 class Screen:
     def __init__(self, title, wh, img_path):
@@ -68,6 +73,14 @@ class Bomb():
         self.vy *= tate
         self.blit(scr)
 
+    #こうかとんの当たり判定
+    def kkt_check(self, kkt:Bird, scr:Screen):
+        yoko, tate = check_bound(self.rct, kkt.rct)
+        self.vx *= yoko
+        self.vy *= tate
+        self.blit(scr)
+
+
 class Time:
     def __init__(self, size):
         #タイマー用のフォント設定
@@ -75,28 +88,39 @@ class Time:
         tmr = pg.time.get_ticks()/1000 #描画するタイムを取得
         self.txt = self.font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
 
-    def bilt(self,scr:Screen):
+    def blit(self,scr:Screen):
         scr.sfc.blit(self.txt, (0,0))
 
     def update(self,scr:Screen):
         tmr = pg.time.get_ticks()/1000 #描画するタイムを取得
         self.txt = self.font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
-        self.bilt(scr)
+        self.blit(scr)
 
 class GameOver:
-    def __init__(self):
+    def __init__(self,xy):
         #GameOver用のフォント設定
         self.font = pg.font.Font(None, 200)
+        self.xy = xy
 
     def blit(self,scr:Screen):
-        scr.sfc.blit(self.txt, (400,300))
+        scr.sfc.blit(self.txt, (self.xy))
 
-    def render(self,scr:Screen):
-        self.txt = self.font.render("GameOver", True, "black") #黒色でGameOverを書いたSurfaceを生成する
+    def render(self,scr:Screen,text):
+        self.txt = self.font.render(text, True, "black") #黒色でGameOverを書いたSurfaceを生成する
         self.blit(scr)
         pg.display.update()
         pg.time.delay(2000) #GameOverが描画されてから2秒間止める
 
+class Life:
+    def __init__(self, life):
+        #残機用のフォント設定
+        self.font = pg.font.Font(None, 80)
+        self.life = life
+        self.txt = self.font.render(str(self.life), True, "black") #黒色でタイムを書いたSurfaceを生成する
+
+    def blit(self,scr:Screen):
+        self.txt = self.font.render(str(self.life), True, "black") #黒色でタイムを書いたSurfaceを生成する
+        scr.sfc.blit(self.txt, (scr.rct.width-80,0))
 
 def check_bound(obj_rct, scr_rct):
     """
@@ -111,28 +135,46 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate
 
+def load_sound(file):
+    """because pygame can be be compiled without mixer."""
+    if not pg.mixer:
+        return None
+    file = os.path.join(main_dir, "data", file)
+    try:
+        sound = pg.mixer.Sound(file)
+        return sound
+    except pg.error:
+        print("Warning, unable to load, %s" % file)
+    return None
 
 def main():
     clock =pg.time.Clock()
-    # 練習１
-    scr = Screen("にげろ！こうかとん", (1600,900), "fig/pg_bg.jpg")
+    #Screenクラスでウィンドウを描画
+    scr = Screen("負けるな！こうかとん", (1600,900), "fig/pg_bg.jpg")
 
-    # 練習2
+    # Birdクラスでこうかとんを作成
     kkt = Bird("fig/6.png", 2.0, (900, 400))
     kkt.blit(scr) #blit
 
-    # 練習3
+    # 爆弾の色は三種類からランダムに設定
     bomb_color = [(255,0,0),(0,255,0),(0,0,255)]
     bomb = Bomb(random.choice(bomb_color), 10, scr)
     bomb.blit(scr) #blit
 
+    #後で追加される爆弾のリスト
     bomb_lis = [bomb]
 
     time = Time(80)
-    time.bilt(scr)
+    time.blit(scr)
 
+    #sを押した際にゲームスタートするように判定を設定
     game_flag = False
+    #爆弾にあたった際の音の設定
+    boom_sound = load_sound("boom.wav")
 
+    #こうかとんの当たっても大丈夫な回数
+    kkt_life = 3
+    life_font = Life(kkt_life)
     # 練習２
     while True:
         scr.blit() #blit
@@ -140,22 +182,38 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
+            #sキーを押したらゲームスタート
             key_dct = pg.key.get_pressed()
             if key_dct[pg.K_s]: game_flag = True
 
+            #スペースキーを押したとき爆弾が10個以上であれば1個から4個爆弾を削除
+            if key_dct[pg.K_SPACE]:
+                if len(bomb_lis) >10:
+                    del_bomb = random.randint(6,9)
+                    del bomb_lis[del_bomb:]
+
         if game_flag:
             kkt.update(scr)
+            time.update(scr)
+            life_font.blit(scr)
             for bomb in bomb_lis:
                 bomb.update(scr)
                 if kkt.rct.colliderect(bomb.rct):
-                    GameOver().render(scr)
-                    return
+                    bomb.kkt_check(kkt,scr)
+                    kkt_life -= 1
+                    life_font.life = copy.deepcopy(kkt_life)
+                    if kkt_life > 0:
+                        pass
+                    else:
+                        life_font.life = copy.deepcopy(kkt_life)
+                        if pg.mixer:
+                            boom_sound.play()
+                        GameOver((400,300)).render(scr,"GameOver")
+                        return
             #4900msから5000msの間に処理できるだけ追加
             if pg.time.get_ticks()%5000 >= 4990:
                 bomb_lis.append(Bomb(random.choice(bomb_color), 10,  scr))
 
-
-            time.update(scr)
         pg.display.update()
         clock.tick(1000)
 
