@@ -68,6 +68,35 @@ class Bomb():
         self.vy *= tate
         self.blit(scr)
 
+class Time:
+    def __init__(self, size):
+        #タイマー用のフォント設定
+        self.font = pg.font.Font(None, size)
+        tmr = pg.time.get_ticks()/1000 #描画するタイムを取得
+        self.txt = self.font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
+
+    def bilt(self,scr:Screen):
+        scr.sfc.blit(self.txt, (0,0))
+
+    def update(self,scr:Screen):
+        tmr = pg.time.get_ticks()/1000 #描画するタイムを取得
+        self.txt = self.font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
+        self.bilt(scr)
+
+class GameOver:
+    def __init__(self):
+        #GameOver用のフォント設定
+        self.font = pg.font.Font(None, 200)
+
+    def blit(self,scr:Screen):
+        scr.sfc.blit(self.txt, (400,300))
+
+    def render(self,scr:Screen):
+        self.txt = self.font.render("GameOver", True, "black") #黒色でGameOverを書いたSurfaceを生成する
+        self.blit(scr)
+        pg.display.update()
+        pg.time.delay(2000) #GameOverが描画されてから2秒間止める
+
 
 def check_bound(obj_rct, scr_rct):
     """
@@ -99,6 +128,10 @@ def main():
 
     bomb_lis = [bomb]
 
+    time = Time(80)
+    time.bilt(scr)
+
+    game_flag = False
 
     # 練習２
     while True:
@@ -107,18 +140,21 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
+            key_dct = pg.key.get_pressed()
+            if key_dct[pg.K_s]: game_flag = True
 
-        kkt.update(scr)
+        if game_flag:
+            kkt.update(scr)
+            for bomb in bomb_lis:
+                bomb.update(scr)
+                if kkt.rct.colliderect(bomb.rct):
+                    GameOver().render(scr)
+                    return
+            #4900msから5000msの間に処理できるだけ追加
+            if pg.time.get_ticks()%5000 >= 4990:
+                bomb_lis.append(Bomb(random.choice(bomb_color), 10,  scr))
 
-        # 練習3
-        for bomb in bomb_lis:
-            bomb.update(scr)
-            if kkt.rct.colliderect(bomb.rct):
-                return
-        #4900msから5000msの間に処理できるだけ追加
-        if pg.time.get_ticks()%5000 >= 4990:
-            bomb_lis.append(Bomb(random.choice(bomb_color), 10,  scr))
-
+            time.update(scr)
         pg.display.update()
         clock.tick(1000)
 
