@@ -15,7 +15,7 @@ class Screen:
     def blit(self):
         self.sfc.blit(self.pgbg_sfc, self.pgbg_rct) #blit
 
-class Bird:
+class Bird(pg.sprite.Sprite):
     key_delta = {
         pg.K_UP:    [0, -1],
         pg.K_DOWN:  [0, +1],
@@ -44,7 +44,7 @@ class Bird:
                 self.rct.centery -= delta[1]
         self.blit(scr)
 
-class Bomb:
+class Bomb(pg.sprite.Sprite):
     def __init__(self, color, rad, vt, scr:Screen):
         self.sfc = pg.Surface((2*rad, 2*rad)) #(20, 20) 正方形の空のSurface
         self.sfc.set_colorkey((0, 0, 0)) #四隅の黒を透明に
@@ -95,6 +95,9 @@ def main():
     bomb = Bomb((255,0,0), 10, (+1,+1), scr)
     bomb.blit(scr) #blit
 
+    bomb_lis = [bomb]
+
+
     # 練習２
     while True:
         scr.blit() #blit
@@ -106,10 +109,10 @@ def main():
         kkt.update(scr)
 
         # 練習3
-        bomb.update(scr)
-
-        if kkt.rct.colliderect(bomb.rct):
-            return
+        for bomb in bomb_lis:
+            bomb.update(scr)
+            if kkt.rct.colliderect(bomb.rct):
+                return
 
         pg.display.update()
         clock.tick(1000)
