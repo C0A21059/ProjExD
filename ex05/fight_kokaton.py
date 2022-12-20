@@ -8,6 +8,7 @@ import pygame as pg
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
+
 class Screen:
     def __init__(self, title, wh, img_path):
         pg.display.set_caption(title) #"負けるな！こうかとん" タイトルバーに「逃げろ！こうかとん」と表示する
@@ -20,6 +21,7 @@ class Screen:
     def blit(self):
         self.sfc.blit(self.pgbg_sfc, self.pgbg_rct) #blit
 
+
 class Bird():
     key_delta = {
         pg.K_UP:    [0, -1],
@@ -27,18 +29,19 @@ class Bird():
         pg.K_LEFT:  [-1, 0],
         pg.K_RIGHT: [+1, 0],
     }
+
     def __init__(self, img_path, ratio, xy):
         self.sfc = pg.image.load(img_path) #fig/6.png こうかとんのSurface
         self.sfc = pg.transform.rotozoom(self.sfc, 0, ratio)#こうかとんの傾き0度、大きさを2倍に
         self.rct = self.sfc.get_rect() #Rect
         self.rct.center = xy #900, 400
 
-    #scrにself.rctに従って，self_sfcを貼り付ける
     def blit(self, scr:Screen):
+        #scrにself.rctに従って，self_sfcを貼り付ける
         scr.sfc.blit(self.sfc, self.rct)
 
-    #こうかとんの座標を変更
     def update(self, scr:Screen):
+        #こうかとんの座標を変更
         key_dct = pg.key.get_pressed()
         for key, delta in Bird.key_delta.items():
             if key_dct[key]:
@@ -48,6 +51,7 @@ class Bird():
                 self.rct.centerx -= delta[0]
                 self.rct.centery -= delta[1]
         self.blit(scr)
+
 
 class Bomb():
     def __init__(self, color, rad, scr:Screen):
@@ -61,12 +65,12 @@ class Bomb():
         self.rct.centery = random.randint(0, 200) #上部200までに設定
         self.vx, self.vy = random.choice([-1,+1]), random.choice([-1,+1]) #方向をランダムに設定
 
-    # scrにself.rctに従って，self_sfcを貼り付ける
     def blit(self, scr:Screen):
+        # scrにself.rctに従って，self_sfcを貼り付ける
         scr.sfc.blit(self.sfc, self.rct)
 
-    #爆弾の座標を変更
     def update(self, scr:Screen):
+        #爆弾の座標を変更
         self.rct.move_ip(self.vx, self.vy)
         scr.sfc.blit(self.sfc, self.rct)
         yoko, tate = check_bound(self.rct, scr.rct)
@@ -74,8 +78,8 @@ class Bomb():
         self.vy *= tate
         self.blit(scr)
 
-    #こうかとんの当たり判定
     def kkt_check(self, kkt:Bird, scr:Screen):
+        #こうかとんの当たり判定
         yoko, tate = check_bound(self.rct, kkt.rct)
         self.vx *= yoko
         self.vy *= tate
@@ -90,12 +94,15 @@ class Time:
         self.txt = self.font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
 
     def blit(self,scr:Screen):
+        # scrにself.txtを貼り付ける
         scr.sfc.blit(self.txt, (0,0))
 
     def update(self,scr:Screen):
+        # タイマーの更新
         tmr = pg.time.get_ticks()/1000 #描画するタイムを取得
         self.txt = self.font.render("{:.1f}".format(tmr), True, "black") #黒色でタイムを書いたSurfaceを生成する
         self.blit(scr)
+
 
 class GameOver:
     def __init__(self,xy):
@@ -104,13 +111,16 @@ class GameOver:
         self.xy = xy
 
     def blit(self,scr:Screen):
+        # scrにself.txtを貼り付ける
         scr.sfc.blit(self.txt, (self.xy))
 
     def render(self,scr:Screen,text):
+        #GameOverを呼び出す
         self.txt = self.font.render(text, True, "black") #黒色でGameOverを書いたSurfaceを生成する
         self.blit(scr)
         pg.display.update()
         pg.time.delay(2000) #GameOverが描画されてから2秒間止める
+
 
 class Life:
     def __init__(self, life):
@@ -120,8 +130,10 @@ class Life:
         self.txt = self.font.render(str(self.life), True, "black") #黒色でタイムを書いたSurfaceを生成する
 
     def blit(self,scr:Screen):
+        # scrにself.txtを貼り付ける
         self.txt = self.font.render(str(self.life), True, "black") #黒色でタイムを書いたSurfaceを生成する
         scr.sfc.blit(self.txt, (scr.rct.width-80,0))
+
 
 def check_bound(obj_rct, scr_rct):
     """
@@ -136,6 +148,7 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate
 
+
 def load_sound(file):
     """because pygame can be be compiled without mixer."""
     if not pg.mixer:
@@ -147,6 +160,7 @@ def load_sound(file):
     except pg.error:
         print("Warning, unable to load, %s" % file)
     return None
+
 
 def main():
     clock =pg.time.Clock()
