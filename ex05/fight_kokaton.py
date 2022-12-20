@@ -2,7 +2,6 @@ import random
 import os
 import copy
 import sys
-import time
 
 import pygame as pg
 
