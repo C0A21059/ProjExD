@@ -45,14 +45,14 @@ class Bird(pg.sprite.Sprite):
         self.blit(scr)
 
 class Bomb(pg.sprite.Sprite):
-    def __init__(self, color, rad, vt, scr:Screen):
+    def __init__(self, color, rad, scr:Screen):
         self.sfc = pg.Surface((2*rad, 2*rad)) #(20, 20) 正方形の空のSurface
         self.sfc.set_colorkey((0, 0, 0)) #四隅の黒を透明に
         pg.draw.circle(self.sfc, color, (rad, rad), rad) #Surface内の色、位置、半径を指定
         self.rct = self.sfc.get_rect() #Rect
         self.rct.centerx = random.randint(0, scr.rct.width) #横幅ランダムに設定
         self.rct.centery = random.randint(0, scr.rct.height) #縦幅ランダムに設定
-        self.vx, self.vy = vt #速度設定
+        self.vx, self.vy = random.choice([-1,+1]), random.choice([-1,+1]) #方向をランダムに設定
 
     # scrにself.rctに従って，self_sfcを貼り付ける
     def blit(self, scr:Screen):
@@ -92,7 +92,8 @@ def main():
     kkt.blit(scr) #blit
 
     # 練習3
-    bomb = Bomb((255,0,0), 10, (+1,+1), scr)
+    bomb_color = [(255,0,0),(0,255,0),(0,0,255)]
+    bomb = Bomb(random.choice(bomb_color), 10, scr)
     bomb.blit(scr) #blit
 
     bomb_lis = [bomb]
@@ -113,6 +114,9 @@ def main():
             bomb.update(scr)
             if kkt.rct.colliderect(bomb.rct):
                 return
+        #4900msから5000msの間に処理できるだけ追加
+        if pg.time.get_ticks()%5000 >= 4990:
+            bomb_lis.append(Bomb(random.choice(bomb_color), 10,  scr))
 
         pg.display.update()
         clock.tick(1000)
