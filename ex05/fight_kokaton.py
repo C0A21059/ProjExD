@@ -153,15 +153,15 @@ def main():
     scr = Screen("負けるな！こうかとん", (1600,900), "fig/pg_bg.jpg")
 
     # Birdクラスでこうかとんを作成
-    kkt = Bird("fig/6.png", 2.0, (900, 400))
+    kkt = Bird("fig/6.png", 2.0, (900,400))
     kkt.blit(scr) #blit
 
     # 爆弾の色は三種類からランダムに設定
-    bomb_color = [(255,0,0),(0,255,0),(0,0,255)]
+    bomb_color = [(255,0,0), (0,255,0), (0,0,255)]
     bomb = Bomb(random.choice(bomb_color), 10, scr)
     bomb.blit(scr) #blit
 
-    #後で追加される爆弾のリスト
+    #経過時間ごとに追加される爆弾のリスト
     bomb_lis = [bomb]
 
     time = Time(80)
@@ -174,8 +174,10 @@ def main():
 
     #こうかとんの当たっても大丈夫な回数
     kkt_life = 3
+
+    #Lifeクラスでこうかとんの残機用のフォントを設定
     life_font = Life(kkt_life)
-    # 練習２
+
     while True:
         scr.blit() #blit
 
@@ -189,7 +191,7 @@ def main():
             #スペースキーを押したとき爆弾が10個以上であれば1個から4個爆弾を削除
             if key_dct[pg.K_SPACE]:
                 if len(bomb_lis) >10:
-                    del_bomb = random.randint(6,9)
+                    del_bomb = random.randint(6, 9)
                     del bomb_lis[del_bomb:]
 
         if game_flag:
@@ -198,18 +200,17 @@ def main():
             life_font.blit(scr)
             for bomb in bomb_lis:
                 bomb.update(scr)
+                #こうかとんと爆弾が当たった際に残機を減らすか、GameOverか判定
                 if kkt.rct.colliderect(bomb.rct):
                     bomb.kkt_check(kkt,scr)
                     kkt_life -= 1
                     life_font.life = copy.deepcopy(kkt_life)
-                    if kkt_life > 0:
-                        pass
-                    else:
+                    if kkt_life < 1:
                         if pg.mixer:
                             boom_sound.play()
                         GameOver((400,300)).render(scr,"GameOver")
                         return
-            #4900msから5000msの間に処理できるだけ追加
+            #4900msから5000msの間に処理できるだけ爆弾を追加
             if pg.time.get_ticks()%5000 >= 4990:
                 bomb_lis.append(Bomb(random.choice(bomb_color), 10,  scr))
 
