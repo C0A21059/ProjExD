@@ -1,9 +1,9 @@
 import random
 import os
 import copy
+import sys
 
 import pygame as pg
-import sys
 
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
