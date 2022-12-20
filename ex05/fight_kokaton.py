@@ -154,6 +154,7 @@ def main():
             if pg.time.get_ticks()%5000 >= 4990:
                 bomb_lis.append(Bomb(random.choice(bomb_color), 10,  scr))
 
+
             time.update(scr)
         pg.display.update()
         clock.tick(1000)
