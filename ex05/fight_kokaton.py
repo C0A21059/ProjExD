@@ -205,7 +205,6 @@ def main():
                     if kkt_life > 0:
                         pass
                     else:
-                        life_font.life = copy.deepcopy(kkt_life)
                         if pg.mixer:
                             boom_sound.play()
                         GameOver((400,300)).render(scr,"GameOver")
