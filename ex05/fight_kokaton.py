@@ -50,8 +50,9 @@ class Bomb():
         self.sfc.set_colorkey((0, 0, 0)) #四隅の黒を透明に
         pg.draw.circle(self.sfc, color, (rad, rad), rad) #Surface内の色、位置、半径を指定
         self.rct = self.sfc.get_rect() #Rect
-        self.rct.centerx = random.randint(0, scr.rct.width) #横幅ランダムに設定
-        self.rct.centery = random.randint(0, scr.rct.height) #縦幅ランダムに設定
+        self.rct.centerx = random.choice([random.randint(0, 200),
+                                        random.randint(scr.rct.width-200, scr.rct.width)]) #左右にランダムに設定
+        self.rct.centery = random.randint(0, 200) #上部200までに設定
         self.vx, self.vy = random.choice([-1,+1]), random.choice([-1,+1]) #方向をランダムに設定
 
     # scrにself.rctに従って，self_sfcを貼り付ける
