@@ -8,19 +8,21 @@ MAZE_W = 11
 MAZE_H = 9
 maze = [[0]*MAZE_W for _ in range(MAZE_H)]
 
-imgBtlBG = pg.image.load("ex06/btlbg.png")
-imgEffect = pg.image.load("ex06/zangeki.png")
-imgEffect_magic = pg.image.load("ex06/magic2.png")
-imgEnemy = pg.image.load("ex06/dragon.png")
-imgEnemy = pg.transform.rotozoom(imgEnemy, 0, 0.5)
-emy_x = WIDTH/2-imgEnemy.get_width()/2
-emy_y = HEIGHT-imgEnemy.get_height()
+imgBtlBG = pg.image.load("ex06/btlbg.png")         #背景画像のSurface
+imgEffect = pg.image.load("ex06/zangeki.png")      #斬撃エフェクトのSurface
+imgEffect_magic = pg.image.load("ex06/magic2.png") #魔法エフェクトのSurface
+imgEnemy = pg.image.load("ex06/dragon.png")        #敵エネミー（ドラゴン）のSurface
+imgEnemy = pg.transform.rotozoom(imgEnemy, 0, 0.5) #画像の大きさを半分に
+emy_x = WIDTH/2-imgEnemy.get_width()/2             #横の描画位置をウィンドウの中心に
+emy_y = HEIGHT-imgEnemy.get_height()               #縦の描画位置をウィンドウの中心に
+#敵エネミーの変数
 emy_step = 0
 emy_blink = 0
 dmg_eff = 0
 emy_life = 3000
-COMMAND = ["[A]ttack", "[I]tems", "[M]agic", "[R]un"]
-message = [""]*10
+COMMAND = ["[A]ttack", "[I]tems", "[M]agic", "[R]un"] #Playerのコマンドのリスト
+
+message = [""]*10 #Playerと敵エネミーの行動リスト
 
 def make_maze():
     #ダンジョンの迷路を作成
@@ -73,8 +75,9 @@ def move_player(pl_x,pl_y, player_rct,mode): # 主人公の移動
                 pl_y += delta[1][1]
                 player_rct.centerx += delta[1][2]
                 player_rct.centery += delta[1][3]
+    #迷路のマスが2であれば戦闘画面に移行
     if maze[pl_y][pl_x] == 2:
-        pl_x,pl_y,mode = 1,1,1
+        mode = 1
     return pl_x,pl_y,mode
 
 
@@ -85,15 +88,27 @@ def init_message():
 
 
 def set_message(msg):
-    for i in range(10):
+    #引数：Playerもしくは敵エネミーの行動
+    for i in range(len(message)):
+        #messageが空なら追加
         if message[i] == "":
             message[i] = msg
             return
-    for i in range(9):
+    #空でない場合、上に一つメッセージをずらし、最後に新しいメッサージを追加
+    for i in range(len(message)-1):
         message[i] = message[i+1]
-    message[9] = msg
+    message[-1] = msg
+
 
 def draw_text(bg, txt, x, y, fnt, col):
+    """
+    bg  :背景のSurface
+    txt :描画する文字列の入ったリスト
+    x   :横の描画開始位置
+    y   :縦の描画開始位置
+    fnt :fontのSurface
+    col :色
+    """
     sur = fnt.render(txt, True, (  0,  0,  0))
     bg.blit(sur, [x+1, y+2])
     sur = fnt.render(txt, True, col)
@@ -104,26 +119,27 @@ def draw_battle(bg, fnt):
     bx = 0
     by = 0
 
-    if dmg_eff > 0:
+    if dmg_eff > 0: #敵エネミーの行動をする際に画像を上下させるために描画位置を更新
         dmg_eff = dmg_eff - 1
         bx = random.randint(-20, 20)
         by = random.randint(-10, 10)
     bg.blit(imgBtlBG, [bx, by])
-    if emy_blink%2 == 0:
+    if emy_blink%2 == 0: #偶然の場合はエネミーの画像を描画
         bg.blit(imgEnemy, [emy_x, emy_y+emy_step])
-    if emy_blink > 0:
+    if emy_blink > 0: #奇数の場合はカウントだけ更新し、攻撃を受けた際に点滅しているように描画
         emy_blink = emy_blink - 1
-    for i in range(10):
+    for i in range(10): #Playerと敵エネミーの行動を描画
         draw_text(bg, message[i], WIDTH-200, 100+i*50, fnt, (255,255,255))
 
 def battle_command(bg, fnt):
-    for i in range(4):
+    #バトルコマンドを描画
+    for i in range(len(COMMAND)):
         draw_text(bg, COMMAND[i], 20, 360+60*i, fnt, (255,255,255))
 
 def main():
     global emy_step, emy_blink, dmg_eff, emy_life
-    pg.display.set_caption("不思議のダンジョン")
-    screen = pg.display.set_mode((WIDTH, HEIGHT))
+    pg.display.set_caption("不思議のダンジョン") #タイトルバーに「不思議のダンジョン」と表示する
+    screen = pg.display.set_mode((WIDTH, HEIGHT)) #(880,720)の画面Surfaceを生成する
     clock = pg.time.Clock()
 
     make_maze()
@@ -135,27 +151,23 @@ def main():
     player_rct.center = 120, 120
     screen.blit(player_sfc, player_rct) #blit
 
-    pl_x = 1
-    pl_y = 1
-    mode = 0
+    pl_x = 1 #Playerの横マス開始位置
+    pl_y = 1 #Playerの縦マス開始位置
+    mode = 0 #迷路画面と戦闘画面の切り替え変数
+    turn = 0 #どの行動を行うか判定に使う変数
+    tmr = 0  #どの描画をするか判定に使う変数
 
+    font = pg.font.Font(None, 30) #fontの描画に使うSurface
 
-    turn = 0
-    tmr = 0
-
-    turn = 0
-    tmr = 0
-
-    font = pg.font.Font(None, 30)
-
-    init_message()
+    init_message() #メッサージを入れるリストを作成
     while True:
+        #迷路画面
         if mode == 0:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
-
+            #迷路の描画を行う
             for y in range(MAZE_H):
                 for x in range(MAZE_W):
                     W = WIDTH / MAZE_W
@@ -168,9 +180,10 @@ def main():
                         pg.draw.rect(screen, ( 96,  96,  96), [X, Y, W, H])
                     if maze[y][x] == 2:
                         pg.draw.rect(screen, (0,0,255), [X, Y, W, H])
-
+            #Playerの描画と位置の更新
             pl_x, pl_y,mode = move_player(pl_x,pl_y, player_rct,mode)
-            screen.blit(player_sfc, player_rct)
+            screen.blit(player_sfc, player_rct) #blit
+        #戦闘画面
         if mode ==1:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
