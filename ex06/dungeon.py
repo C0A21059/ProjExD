@@ -4,9 +4,9 @@ import random
 
 WIDTH = 880 #ウィンドウの横幅
 HEIGHT = 720 #ウィンドウの縦幅
-MAZE_W = 11
-MAZE_H = 9
-maze = [[0]*MAZE_W for _ in range(MAZE_H)]
+MAZE_W = 11 #迷路の横マスの数
+MAZE_H = 9 #迷路の縦マスの数
+maze = [[0]*MAZE_W for _ in range(MAZE_H)] #迷路のマスを判別するリスト
 
 imgBtlBG = pg.image.load("ex06/btlbg.png")         #背景画像のSurface
 imgEffect = pg.image.load("ex06/zangeki.png")      #斬撃エフェクトのSurface
